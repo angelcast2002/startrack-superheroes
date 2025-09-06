@@ -1,20 +1,12 @@
 import './App.css';
-import HeroCard from './components/HeroCard';
+import LikedHeroes from './pages/likedHeroes';
 
-function App() {
-  const dataDummy = {
-    id: 1,
-    name: 'A-Bomb',
-  };
+const App = () => {
   return (
-    <>
-      <div className="flex bg-white w-screen h-screen flex-row gap-4 p-4">
-        <HeroCard hero={dataDummy} isFav={false} onToggle={() => {}} />
-        <HeroCard hero={dataDummy} isFav={false} onToggle={() => {}} />
-        <HeroCard hero={dataDummy} isFav={false} onToggle={() => {}} />
-      </div>
-    </>
+    <div className="bg-[#11072F] min-h-screen w-full">
+      <LikedHeroes />
+    </div>
   );
-}
+};
 
 export default App;
