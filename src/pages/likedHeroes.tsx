@@ -51,37 +51,27 @@ const LikedHeroes = () => {
   if (error) return <div className="p-6 text-red-400">Error: {error}</div>;
 
   return (
-    // <div className="mx-auto max-w-4xl p-6">
-    //   <header className="mb-4 flex items-center justify-between">
-    //     <h1 className="text-2xl font-bold">Liked Heroes</h1>
-    //     <span className="rounded-lg border border-neutral-700 px-3 py-1 text-sm text-neutral-300">{favorites.length} favoritos</span>
-    //   </header>
-
-    //   {favorites.length === 0 ? (
-    //     <div className="rounded-xl border border-neutral-800 bg-neutral-900/50 p-6 text-neutral-400">Aún no tienes favoritos. Ve a la lista general y marca algunos con ★</div>
-    //   ) : (
-    //     <ul className="space-y-2">
-    //       {favorites.map((hero) => (
-    //         <li key={hero.id}>
-    //           <HeroCard hero={hero} isFav={idsFav.has(hero.id)} onToggle={handleToggle} />
-    //         </li>
-    //       ))}
-    //     </ul>
-    //   )}
-    // </div>
-    <div className='flex flex-col gap-10 pb-[83px] px-[129px]'>
+    <div className="flex flex-col gap-10 pb-[50px] px-[129px] items-center font-poppins">
       <div className="flex justify-center p-14">
         <Logo />
       </div>
-      <div>
+
+      <div className="grid w-full max-w-7xl justify-center grid-cols-[repeat(auto-fit,285px)] gap-4">
         {liked.map((hero) => (
           <HeroCard key={hero.id} hero={hero} isFav onToggle={handleToggle} />
         ))}
       </div>
-      <div className='flex flex-col gap-[15px]'>
-        {data.map((hero) => (
-          <HeroCard key={hero.id} hero={hero} isFav={idsFav.has(hero.id)} onToggle={handleToggle} />
-        ))}
+
+      <div className="flex flex-col gap-6 w-full">
+        <div className="flex flex-row justify-between">
+          <p className='text-lg font-bold truncate'>All superheroes</p>
+          <div>Buscar</div>
+        </div>
+        <div className="grid w-full justify-center md:justify-between grid-cols-[repeat(auto-fit,285px)] gap-4">
+          {data.map((hero) => (
+            <HeroCard key={hero.id} hero={hero} isFav={idsFav.has(hero.id)} onToggle={handleToggle} />
+          ))}
+        </div>
       </div>
     </div>
   );
