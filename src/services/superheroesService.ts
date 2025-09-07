@@ -35,13 +35,13 @@ export const fetchSuperheroes = async (opts?: { signal?: AbortSignal; force?: bo
 //   return list.find((h) => h.id === id);
 // };
 
-// /** Búsqueda por name o realName (case-insensitive) */
-// export const searchHeroes = async (q: string, opts?: { signal?: AbortSignal }): Promise<Superhero[]> => {
-//   const list = await fetchSuperheroes(opts);
-//   const s = q.trim().toLowerCase();
-//   if (!s) return list;
-//   return list.filter((h) => h.name.toLowerCase().includes(s) || (h.realName ?? '').toLowerCase().includes(s));
-// };
+/** Búsqueda por name o fullName (case-insensitive) */
+export const searchHeroes = async (q: string, opts?: { signal?: AbortSignal }): Promise<Superhero[]> => {
+  const list = await fetchSuperheroes(opts);
+  const s = q.trim().toLowerCase();
+  if (!s) return list;
+  return list.filter((h) => (h.name ?? '').toLowerCase().includes(s) || (h.biography?.fullName ?? '').toLowerCase().includes(s));
+};
 
 // /** Cálculo sencillo del "power score" (promedio de stats válidos) */
 // export const powerScore = (h: Superhero): number => {

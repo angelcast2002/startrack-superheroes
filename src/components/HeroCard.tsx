@@ -26,7 +26,7 @@ const HeroCard = memo(({ hero, isFav, onToggle }: Props) => {
   return (
     <div
       className="
-      bg-gradient-to-br from-[#1B1535] via-[#2A2155] to-[#362C6A] relative flex items-center gap-4 p-4 rounded-2xl overflow-hidden border border-[rgba(106,77,188,1)] backdrop-blur-[27px] backdrop-saturate-150 shadow-xl text-white w-[285px] h-[174px]
+      bg-gradient-to-br from-[#1B1535] via-[#2A2155] to-[#362C6A] relative flex items-center gap-4 p-4 rounded-2xl overflow-hidden backdrop-blur-[27px] backdrop-saturate-150 shadow-xl text-white w-[285px] h-[174px]
     "
     >
       <img src={hero.images?.sm} alt="" aria-hidden className="pointer-events-none absolute inset-0 -z-10 w-full h-full object-cover blur-2xl scale-110 opacity-35" />
