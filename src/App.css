@@ -1,5 +1,11 @@
 @import "tailwindcss";
 
+/* Ocultar scrollbar pero mantener el scroll */
+@layer utilities {
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+  .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+}
+
 @layer utilities {
   @keyframes fade-in-up {
     0%   { opacity: 0; transform: translateY(12px); }

@@ -10,19 +10,16 @@ import { fetchSuperheroes } from '../services/superheroesService';
 import SearchBar from '../components/SearchBar';
 import HeartIcon from '../assets/big-heart/big-heart.svg?react';
 import ArrowUp from '../assets/arrow-up/arrow-up.svg?react';
+import VirtualGrid, { type VirtualGridHandle } from '../components/AllHeroesVirtualGrid';
 
 const RECENT_MS = 8000;
 const KEY_LIKED_OPEN = 'startrack:likedOpen';
 
 const LikedHeroes = () => {
-  const lastAddedRef = useRef<number | null>(null);
-  const nodeRefs = useRef<Record<number, HTMLDivElement | null>>({});
-  const setNodeRef = (id: number) => (el: HTMLDivElement | null) => {
-    if (el) nodeRefs.current[id] = el;
-    else delete nodeRefs.current[id];
-  };
+  const lastAddedIndexRef = useRef<number | null>(null);
+  const likedGridRef = useRef<VirtualGridHandle | null>(null);
 
-  const [favIds, , fav] = useFavorites();
+  const [favIds, , fav] = useFavorites(); 
 
   const [data, setData] = useState<Superhero[]>([]);
   const [loading, setLoading] = useState(true);
@@ -88,7 +85,7 @@ const LikedHeroes = () => {
   const handleToggle = (hero: Superhero) => {
     const isFav = idsFav.has(hero.id);
     if (!isFav) {
-      lastAddedRef.current = hero.id;
+      lastAddedIndexRef.current = favIds.length;
       setLikedOpen(true);
       markRecent(hero.id);
       fav.add(hero.id);
@@ -108,13 +105,9 @@ const LikedHeroes = () => {
   };
 
   useEffect(() => {
-    const id = lastAddedRef.current;
-    if (!id) return;
-    requestAnimationFrame(() => {
-      const el = nodeRefs.current[id];
-      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      lastAddedRef.current = null;
-    });
+    if (lastAddedIndexRef.current == null) return;
+    likedGridRef.current?.scrollToIndex(lastAddedIndexRef.current, 'center');
+    lastAddedIndexRef.current = null;
   }, [liked]);
 
   if (loading) {
@@ -186,13 +179,14 @@ const LikedHeroes = () => {
               <p>You haven’t liked any superhero yet</p>
             </div>
           ) : (
-            <div className="grid w-full max-w-7xl grid-cols-[repeat(auto-fit,285px)] justify-center gap-4">
-              {liked.map((hero) => (
-                <div key={hero.id} ref={setNodeRef(hero.id)}>
-                  <HeroCard hero={hero} isFav recent={recentIds.has(hero.id)} onToggle={handleToggle} />
-                </div>
-              ))}
-            </div>
+            <VirtualGrid
+              ref={likedGridRef}
+              items={liked}
+              maxHeightPx={Math.floor(window.innerHeight * 0.5)}
+              autoShrink
+              className="bg-transparent"
+              renderItem={(hero: Superhero) => <HeroCard hero={hero} isFav recent={recentIds.has(hero.id)} onToggle={handleToggle} />}
+            />
           )}
         </div>
       </div>
@@ -204,13 +198,20 @@ const LikedHeroes = () => {
         </div>
 
         {filteredAll.length === 0 ? (
-          <div className="rounded-xl border border-neutral-800 bg-neutral-900/50 p-6 text-neutral-400">No results for “{searchTerm}”.</div>
+          <div className="rounded-2xl bg-neutral-900/50 p-6 text-neutral-400">No results for “{searchTerm}”.</div>
         ) : (
-          <div className="grid w-full grid-cols-[repeat(auto-fit,285px)] justify-center gap-4 md:justify-between">
-            {filteredAll.map((hero) => (
-              <HeroCard key={hero.id} hero={hero} isFav={false} onToggle={handleToggle} />
-            ))}
-          </div>
+          <VirtualGrid
+            items={filteredAll}
+            maxHeightPx={Math.floor(window.innerHeight * 0.6)}
+            className="bg-transparent"
+            renderItem={(hero: Superhero) => (
+              <HeroCard
+                hero={hero}
+                isFav={false}
+                onToggle={handleToggle}
+              />
+            )}
+          />
         )}
       </div>
     </div>
