@@ -1,5 +1,5 @@
 export interface Superhero {
-  id?: number;
+  id: number;
   name?: string;
   slug?: string;
   powerstats?: Powerstats;

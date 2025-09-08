@@ -6,10 +6,11 @@ import HeartIcon from '../assets/big-heart/big-heart.svg?react';
 type Props = {
   hero: Superhero;
   isFav: boolean;
-  onToggle: (isFav: Superhero) => void;
+  recent?: boolean;
+  onToggle: (hero: Superhero) => void;
 };
 
-const HeroCard = memo(({ hero, isFav, onToggle }: Props) => {
+const HeroCard = memo(({ hero, isFav, recent = false, onToggle }: Props) => {
   const getPowerStats = () => {
     const stats =
       ((hero.powerstats?.intelligence ?? 0) +
@@ -25,27 +26,33 @@ const HeroCard = memo(({ hero, isFav, onToggle }: Props) => {
 
   return (
     <div
-      className="
-      bg-gradient-to-br from-[#1B1535] via-[#2A2155] to-[#362C6A] relative flex items-center gap-4 p-4 rounded-2xl overflow-hidden backdrop-blur-[27px] backdrop-saturate-150 shadow-xl text-white w-[285px] h-[174px]
-    "
+      className="relative flex h-[174px] w-[285px] items-center gap-4 overflow-hidden rounded-2xl
+                    bg-gradient-to-br from-[#1B1535] via-[#2A2155] to-[#362C6A]
+                    p-4 text-white shadow-xl backdrop-blur-[27px] backdrop-saturate-150 animate-fade-in-up motion-reduce:animate-none "
     >
-      <img src={hero.images?.sm} alt="" aria-hidden className="pointer-events-none absolute inset-0 -z-10 w-full h-full object-cover blur-2xl scale-110 opacity-35" />
+      <img src={hero.images?.sm} alt="" aria-hidden className="pointer-events-none absolute inset-0 -z-10 h-full w-full scale-110 object-cover opacity-35 blur-2xl" />
 
-      <div className="relative shrink-0 w-[110px]">
-        <img className="h-36 w-[110px] object-cover rounded-xl" src={hero.images?.sm} alt={hero.name} />
+      <span
+        className="pointer-events-none absolute -right-2 top-2 rounded-full bg-[#6A4DBC] px-3 py-1 text-xs font-semibold"
+        style={{ opacity: recent ? 1 : 0, transform: recent ? 'translateY(0)' : 'translateY(-6px)', transition: 'opacity .3s ease, transform .3s ease' }}
+      >
+        Liked recently
+      </span>
 
+      <div className="relative w-[110px] shrink-0">
+        <img className="h-36 w-[110px] rounded-xl object-cover" src={hero.images?.sm} alt={hero.name} />
         <button
           type="button"
           aria-pressed={isFav}
           onClick={() => onToggle(hero)}
-          className="absolute -bottom-2 -right-2 h-10 w-10 rounded-full grid place-items-center bg-[#6A4DBC] cursor-pointer shadow-md"
+          className="absolute -bottom-2 -right-2 grid h-10 w-10 cursor-pointer place-items-center rounded-full bg-[#6A4DBC] shadow-md"
         >
           <HeartIcon className={isFav ? 'w-3.5 text-white fill-current' : 'w-3.5 text-white fill-transparent stroke-current stroke-[2.5]'} />
         </button>
       </div>
 
-      <div className="flex-1 min-w-0 flex flex-col gap-1 justify-center font-poppins">
-        <span className="text-lg font-bold truncate">{hero.name}</span>
+      <div className="min-w-0 flex flex-1 flex-col justify-center gap-1 font-poppins">
+        <span className="truncate text-lg font-bold">{hero.name}</span>
         <span className="text-xs text-white/50">Real Name: {hero.biography?.fullName}</span>
         <div className="mt-2 flex items-center gap-2">
           <Fist className="h-3 w-3" />

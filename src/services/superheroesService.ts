@@ -29,11 +29,6 @@ export const fetchSuperheroes = async (opts?: { signal?: AbortSignal; force?: bo
   return _cache;
 };
 
-// /** Devuelve un héroe por id (usa cache si ya existe) */
-// export const getHeroById = async (id: number, opts?: { signal?: AbortSignal }): Promise<Superhero | undefined> => {
-//   const list = await fetchSuperheroes(opts);
-//   return list.find((h) => h.id === id);
-// };
 
 /** Búsqueda por name o fullName (case-insensitive) */
 export const searchHeroes = async (q: string, opts?: { signal?: AbortSignal }): Promise<Superhero[]> => {
@@ -42,19 +37,3 @@ export const searchHeroes = async (q: string, opts?: { signal?: AbortSignal }): 
   if (!s) return list;
   return list.filter((h) => (h.name ?? '').toLowerCase().includes(s) || (h.biography?.fullName ?? '').toLowerCase().includes(s));
 };
-
-// /** Cálculo sencillo del "power score" (promedio de stats válidos) */
-// export const powerScore = (h: Superhero): number => {
-//   const stats = h.powerstats ?? {};
-//   const vals = Object.values(stats)
-//     .map((v) => (typeof v === 'number' && Number.isFinite(v) ? v : Number(v)))
-//     .filter((n) => Number.isFinite(n)) as number[];
-//   if (!vals.length) return 0;
-//   return Math.round(vals.reduce((a, b) => a + b, 0) / vals.length);
-// };
-
-// /** Permite invalidar manualmente el cache (p.ej., para revalidar) */
-// export const invalidateHeroesCache = (): void => {
-//   _cache = null;
-//   _cachedAt = 0;
-// };
