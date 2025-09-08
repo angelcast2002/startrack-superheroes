@@ -1,69 +1,143 @@
-# React + TypeScript + Vite
+# Startrack – Frontend Technical Test (React + TS)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Lista de superhéroes con búsqueda y favoritos, desarrollada en **React + TypeScript** y estilizada con **Tailwind CSS**.  
+Cumple los requisitos del test: favoritos persistidos por **IDs**, colapso con **persistencia**, **scroll** automático al último favorito, **skeletons** de carga, **virtualización** de la lista general (altura fija & renderiza solo lo visible) y diseño **responsivo**.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 🚀 Demo local
 
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+# Requisitos: Node 18+ y npm
+npm i
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+- App: http://localhost:5173  
+- Build producción: `npm run build` → carpeta `dist/`  
+- Preview del build: `npm run preview`
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+> Si Vite muestra “Outdated Optimize Dep” u optimizaciones raras:
+> ```bash
+> rm -rf node_modules/.vite
+> npm run dev -- --force
+> ```
 
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+---
+
+## 🚀 Demo Online - Netlify
+
+[Superheroes](https://starttrackproof.netlify.app/)
+
+## 🧰 Stack
+
+- **React 18 + TypeScript**
+- **Vite**
+- **Tailwind CSS**
+- **react-content-loader** → skeletons
+- **VirtualGrid** casero → virtualización sin dependencias
+
+---
+
+## 📦 Estructura (resumen)
+
 ```
+src/
+  assets/                   # íconos SVG y logo
+  components/
+    HeroCard.tsx
+    HeroCardSkeleton.tsx
+    HeroGridSkeleton.tsx
+    SearchBar.tsx
+    VirtualGrid.tsx         # grid virtualizado (reutilizable)
+  interfaces/
+    hero.ts                 # tipos del API
+  pages/
+    LikedHeroes.tsx         # pantalla principal
+  services/
+    superheroesService.ts   # fetch + cache TTL + búsqueda
+  store/
+    favorites.ts            # hook de favoritos por IDs (localStorage)
+  App.tsx
+  main.tsx
+  index.css
+```
+
+---
+
+## 🔌 Datos & API
+
+- Fuente: `https://akabab.github.io/superhero-api/api/all.json`  
+- **Sin backend**. En redes con CORS estrictos puedes usar (opcional):  
+  `https://cors-anywhere.herokuapp.com/https://akabab.github.io/superhero-api/api/all.json`
+
+---
+
+## ✨ Funcionalidades
+
+- **Búsqueda** por `name` y `biography.fullName` (en la lista general).
+- **Favoritos**:
+  - Alternar `Like/Unlike` en cada card.
+  - Las cards se mueven entre **General** ⇄ **Liked**.
+  - **Orden estable**: se agregan **al final**.
+  - Persistencia de **IDs** en `localStorage` (p. ej. `[23, 1, 45, 12]`).
+  - **Badge** “Liked recently” por unos segundos al agregar.
+  - **Scroll automático** a la última card agregada (abre la sección si estaba colapsada).
+- **Sección Liked**:
+  - **Colapsable** con persistencia del estado en `localStorage`.
+- **Lista General**:
+  - **Altura fija** (< `100vh`, p. ej. ~60vh).
+  - **Virtualización** (renderiza sólo lo visible + overscan).
+  - **Múltiples cards por fila**, responsivo (cálculo automático por ancho).
+  - **Scrollbar oculta** visualmente (el scroll sigue funcionando).
+- **Skeletons** de carga (`react-content-loader`).
+- **Power score** = promedio simple de `powerstats` (escala 0–10).
+- **Cache** en memoria del fetch (TTL configurable).
+
+---
+
+## 🧠 Decisiones técnicas
+
+- **Favoritos por IDs** (`useFavorites()`): guarda y restaura `number[]` (requisito del PDF).  
+- **VirtualGrid** propio: sin dependencias, columnas por `ResizeObserver`, posicionamiento con `absolute`, solo render visible.  
+- **AbortController** al hacer fetch (cancelación segura).  
+- **Persistencias**:
+  - `startrack:favorites` → `number[]` de favoritos
+  - `startrack:likedOpen` → boolean del colapso
+
+---
+
+## 🧪 Scripts
+
+```bash
+npm run dev       # desarrollo
+npm run build     # producción
+npm run preview   # servir la build local
+```
+
+---
+
+## ♿ Accesibilidad & UX
+
+- Botones con `aria-pressed` en el corazón.
+- Skeletons para estados de carga (evitan “saltos”).
+- Transiciones con `transition: 0.3s ease` (requisito del PDF).
+
+---
+
+## ✅ Checklist vs enunciado
+
+- [x] UI de carga (**react-content-loader**)
+- [x] Colapso de favoritos con **persistencia**
+- [x] Card clickeada se **mueve** entre listas
+- [x] Al añadir favorito: **scroll** a la última + badge + **añadir al final**
+- [x] Favoritos **restaurados** al recargar (por **IDs**)
+- [x] Búsqueda por **nombre** y **nombre real** (lista general)
+- [x] App **responsiva**
+- [x] React + TypeScript
+- [x] **Sin DB**
+- [x] Lista general con **altura fija** (< ventana) y **render solo visible** (**virtualización**)
+- [x] Power score desde `powerstats`
+- [x] Transiciones `0.3s ease`
+
+---
